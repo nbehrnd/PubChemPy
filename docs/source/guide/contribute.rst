@@ -18,8 +18,7 @@ Contributors
 - |ghi| `llazzaro <https://github.com/llazzaro>`_ (Leonardo Lazzaro)
 - |ghi| `bjodah <https://github.com/bjodah>`_ (Björn Dahlgren)
 - |ghi| `RickardSjogren <https://github.com/RickardSjogren>`_ (Rickard Sjögren)
-- |ghi| `pjknowles <https://github.com/pjknowles>` (Peter Knowles)
-- |ghi| `nbehrnd <https://github.com/nbehrnd` (Norwid Behrnd)
+- |ghi| `nbehrnd <https://github.com/nbehrnd>`_ (Norwid Behrnd)
 
 .. _`source code`: https://github.com/mcs07/PubChemPy
 .. _`Issue Tracker`: https://github.com/mcs07/PubChemPy/issues
