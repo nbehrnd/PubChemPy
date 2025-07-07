@@ -12,8 +12,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 import re
-
+import warnings
 import pytest
+from http.client import RemoteDisconnected
+from urllib.error import URLError
 
 from pubchempy import *
 
@@ -133,18 +135,48 @@ def test_coordinate_type(c1):
 
 
 def test_compound_equality():
-    assert Compound.from_cid(241) == Compound.from_cid(241)
-    assert get_compounds('Benzene', 'name')[0], get_compounds('c1ccccc1' == 'smiles')[0]
+    try:
+        assert Compound.from_cid(241) == Compound.from_cid(241)
+        assert get_compounds('Benzene', 'name')[0], get_compounds('c1ccccc1' == 'smiles')[0]
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_synonyms(c1):
-    assert len(c1.synonyms) > 5
-    assert len(c1.synonyms) > 5
+    try:
+        assert len(c1.synonyms) > 5
+        assert len(c1.synonyms) > 5
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_related_records(c1):
-    assert len(c1.sids) > 20
-    assert len(c1.aids) > 20
+    try:
+        assert len(c1.sids) > 20
+        assert len(c1.aids) > 20
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_compound_dict(c1):
@@ -162,10 +194,13 @@ def test_charged_compound(c2):
 
 def test_charged_compound_deprecated(c2):
     with warnings.catch_warnings(record=True) as w:
-        assert c2.atoms[0]['charge'] == -1
+        assert c2.atoms[0]["charge"] == -1
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == 'Dictionary style access to Atom attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == "Dictionary style access to Atom attributes is deprecated"
+        )
 
 
 def test_fingerprint(c1):
