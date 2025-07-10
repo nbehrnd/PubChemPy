@@ -7,9 +7,7 @@ Python interface for the PubChem PUG REST service.
 https://github.com/mcs07/PubChemPy
 """
 
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
+from __future__ import division, print_function, unicode_literals
 
 import functools
 import json
@@ -19,6 +17,7 @@ import ssl
 import sys
 import time
 import warnings
+
 import certifi
 
 try:
@@ -27,7 +26,8 @@ try:
     from urllib.request import urlopen
 except ImportError:
     from urllib import urlencode
-    from urllib2 import quote, urlopen, HTTPError
+
+    from urllib2 import HTTPError, quote, urlopen
 
 try:
     from itertools import zip_longest
