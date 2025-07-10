@@ -19,7 +19,6 @@ import ssl
 import sys
 import time
 import warnings
-import binascii
 import certifi
 
 try:
@@ -50,6 +49,7 @@ log.addHandler(logging.NullHandler())
 if sys.version_info[0] == 3:
     text_types = str, bytes
 else:
+    from past.builtins import basestring
     text_types = (basestring,)
 
 
@@ -936,7 +936,7 @@ class Compound(object):
         try:
             return float(readout)
         except (ValueError, TypeError) as e:
-            print("type conversion of `tpsa` to float failed, {e}")
+            print(f"type conversion of `tpsa` to float failed, {e}")
             return None
 
     @property
