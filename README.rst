@@ -14,13 +14,16 @@ PubChemPy
 ..     :target: https://coveralls.io/r/mcs07/PubChemPy?branch=master
 
 
-|Tests Status| |Test Coverage| |Flake8 Badge|
+|Tests Status| |Test Coverage| |Flake8 Badge| |Code style: black|
 
 .. |Tests Status| image:: ./tests-badge.svg?dummy=8484744
 
 .. |Test Coverage| image:: ./coverage-badge.svg?dummy=8484744
 
 .. |Flake8 Badge| image:: ./flake8-badge.svg?dummy=8484744
+
+.. |Code style: black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
 
 PubChemPy provides a way to interact with PubChem in Python. It allows chemical searches by name, substructure and
 similarity, chemical standardization, conversion between chemical file formats, depiction and retrieval of chemical
