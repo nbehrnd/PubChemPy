@@ -1,0 +1,5 @@
+coverage>=7.9.2
+flake8>=7.3.0
+genbadge[all]>=1.2.2
+pytest>=8.4.1
+
