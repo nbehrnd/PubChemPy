@@ -1,5 +1,6 @@
 -r common.txt
-build
+black>=25.1.0
+build>=1.2.2
 bumpversion>=0.5.3
 coverage>=4.0
 coveralls>=1.0

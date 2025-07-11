@@ -7,9 +7,7 @@ Python interface for the PubChem PUG REST service.
 https://github.com/mcs07/PubChemPy
 """
 
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
+from __future__ import division, print_function, unicode_literals
 
 import functools
 import json
@@ -19,7 +17,7 @@ import ssl
 import sys
 import time
 import warnings
-import binascii
+
 import certifi
 
 try:
@@ -28,7 +26,8 @@ try:
     from urllib.request import urlopen
 except ImportError:
     from urllib import urlencode
-    from urllib2 import quote, urlopen, HTTPError
+
+    from urllib2 import HTTPError, quote, urlopen
 
 try:
     from itertools import zip_longest
@@ -50,11 +49,13 @@ log.addHandler(logging.NullHandler())
 if sys.version_info[0] == 3:
     text_types = str, bytes
 else:
-    text_types = basestring,
+    from past.builtins import basestring
+    text_types = (basestring,)
 
 
 class CompoundIdType(object):
     """"""
+
     #: Original Deposited Compound
     DEPOSITED = 0
     #: Standardized Form of the Deposited Compound
@@ -257,9 +258,12 @@ def request(identifier, namespace='cid', domain='compound', operation=None, outp
     urlid, postdata = None, None
     if namespace == 'sourceid':
         identifier = identifier.replace('/', '.')
-    if namespace in ['listkey', 'formula', 'sourceid'] \
-            or searchtype == 'xref' \
-            or (searchtype and namespace == 'cid') or domain == 'sources':
+    if (
+        namespace in ['listkey', 'formula', 'sourceid']
+        or searchtype == 'xref'
+        or (searchtype and namespace == 'cid')
+        or domain == 'sources'
+    ):
         urlid = quote(identifier.encode('utf8'))
     else:
         postdata = urlencode([(namespace, identifier)]).encode('utf8')
@@ -305,13 +309,15 @@ def get_json(identifier, namespace='cid', domain='compound', operation=None, sea
         log.info(e)
         return None
 
-def get_sdf(identifier, namespace='cid', domain='compound',operation=None, searchtype=None, **kwargs):
+
+def get_sdf(identifier, namespace='cid', domain='compound', operation=None, searchtype=None, **kwargs):
     """Request wrapper that automatically parses SDF response and supresses NotFoundError."""
     try:
         return get(identifier, namespace, domain, operation, 'SDF', searchtype, **kwargs).decode()
     except NotFoundError as e:
         log.info(e)
         return None
+
 
 def get_compounds(identifier, namespace='cid', searchtype=None, as_dataframe=False, **kwargs):
     """Retrieve the specified compound records from PubChem.
@@ -415,6 +421,7 @@ def get_properties(properties, identifier, namespace='cid', searchtype=None, as_
     results = results['PropertyTable']['Properties'] if results else []
     if as_dataframe:
         import pandas as pd
+
         return pd.DataFrame.from_records(results, index='CID')
     return results
 
@@ -460,8 +467,17 @@ def get_all_sources(domain='substance'):
     return results['InformationList']['SourceName']
 
 
-def download(outformat, path, identifier, namespace='cid', domain='compound', operation=None, searchtype=None,
-             overwrite=False, **kwargs):
+def download(
+    outformat,
+    path,
+    identifier,
+    namespace='cid',
+    domain='compound',
+    operation=None,
+    searchtype=None,
+    overwrite=False,
+    **kwargs,
+):
     """Format can be  XML, ASNT/B, JSON, SDF, CSV, PNG, TXT."""
     response = get(identifier, namespace, domain, operation, outformat, searchtype, **kwargs)
     if not overwrite and os.path.isfile(path):
@@ -483,21 +499,25 @@ def memoized_property(fget):
         if not hasattr(self, attr_name):
             setattr(self, attr_name, fget(self))
         return getattr(self, attr_name)
+
     return property(fget_memoized)
 
 
 def deprecated(message=None):
     """Decorator to mark functions as deprecated. A warning will be emitted when the function is used."""
+
     def deco(func):
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
             warnings.warn(
                 message or 'Call to deprecated function {}'.format(func.__name__),
                 category=PubChemPyDeprecationWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             return func(*args, **kwargs)
+
         return wrapped
+
     return deco
 
 
@@ -531,8 +551,15 @@ class Atom(object):
         return 'Atom(%s, %s)' % (self.aid, self.element)
 
     def __eq__(self, other):
-        return (isinstance(other, type(self)) and self.aid == other.aid and self.element == other.element and
-                self.x == other.x and self.y == other.y and self.z == other.z and self.charge == other.charge)
+        return (
+            isinstance(other, type(self))
+            and self.aid == other.aid
+            and self.element == other.element
+            and self.x == other.x
+            and self.y == other.y
+            and self.z == other.z
+            and self.charge == other.charge
+        )
 
     @deprecated('Dictionary style access to Atom attributes is deprecated')
     def __getitem__(self, prop):
@@ -603,8 +630,13 @@ class Bond(object):
         return 'Bond(%s, %s, %s)' % (self.aid1, self.aid2, self.order)
 
     def __eq__(self, other):
-        return (isinstance(other, type(self)) and self.aid1 == other.aid1 and self.aid2 == other.aid2 and
-                self.order == other.order and self.style == other.style)
+        return (
+            isinstance(other, type(self))
+            and self.aid1 == other.aid1
+            and self.aid2 == other.aid2
+            and self.order == other.order
+            and self.style == other.style
+        )
 
     @deprecated('Dictionary style access to Bond attributes is deprecated')
     def __getitem__(self, prop):
@@ -646,6 +678,7 @@ class Compound(object):
     The PubChem Compound database is constructed from the Substance database using a standardization and deduplication
     process. Each Compound is uniquely identified by a CID.
     """
+
     def __init__(self, record):
         """Initialize with a record dict from the PubChem PUG REST service.
 
@@ -745,7 +778,10 @@ class Compound(object):
         if not properties:
             skip = {'aids', 'sids', 'synonyms'}
             properties = [p for p in dir(Compound) if isinstance(getattr(Compound, p), property) and p not in skip]
-        return {p: [i.to_dict() for i in getattr(self, p)] if p in {'atoms', 'bonds'} else getattr(self, p) for p in properties}
+        return {
+            p: [i.to_dict() for i in getattr(self, p)] if p in {'atoms', 'bonds'} else getattr(self, p)
+            for p in properties
+        }
 
     def to_series(self, properties=None):
         """Return a pandas :class:`~pandas.Series` containing Compound data. Optionally specify a list of the desired
@@ -755,6 +791,7 @@ class Compound(object):
         because they each require an extra request.
         """
         import pandas as pd
+
         return pd.Series(self.to_dict(properties))
 
     @property
@@ -872,7 +909,6 @@ class Compound(object):
             print(f"conversion of `XLogP` to float failed, {e}")
             return None
 
-
     @property
     def exact_mass(self):
         """Exact mass."""
@@ -900,7 +936,7 @@ class Compound(object):
         try:
             return float(readout)
         except (ValueError, TypeError) as e:
-            print("type conversion of `tpsa` to float failed, {e}")
+            print(f"type conversion of `tpsa` to float failed, {e}")
             return None
 
     @property
@@ -1016,7 +1052,7 @@ class Compound(object):
             readout = _parse_prop({'label': 'Conformer', 'name': 'RMSD'}, coords['data'])
             try:
                 return float(readout)
-            except(ValueError, TypeError) as e:
+            except (ValueError, TypeError) as e:
                 print(f"type conversion of `conformer_rmsd_3d` to float failed, {e}.")
 
     @property
@@ -1031,15 +1067,15 @@ class Compound(object):
     def mmff94_partial_charges_3d(self):
         return _parse_prop({'label': 'Charge', 'name': 'MMFF94 Partial'}, self.record['props'])
 
-# tentative off, start:
-# [2025-04-03 Thu] this is commented out because cid 241 (benzene) has no dedicated
-# explicit record of this property on pubchem's web site
-# https://pubchem.ncbi.nlm.nih.gov/compound/241 (last modification by [2025-03-29 Fri])
-#    @property
-#    def mmff94_energy_3d(self):
-#        conf = self.record['coords'][0]['conformers'][0]
-#        return _parse_prop({'label': 'Energy', 'name': 'MMFF94 NoEstat'}, conf['data'])
-# tentative off, end.
+    # tentative off, start:
+    # [2025-04-03 Thu] this is commented out because cid 241 (benzene) has no dedicated
+    # explicit record of this property on pubchem's web site
+    # https://pubchem.ncbi.nlm.nih.gov/compound/241 (last modification by [2025-03-29 Fri])
+    #    @property
+    #    def mmff94_energy_3d(self):
+    #        conf = self.record['coords'][0]['conformers'][0]
+    #        return _parse_prop({'label': 'Energy', 'name': 'MMFF94 NoEstat'}, conf['data'])
+    # tentative off, end.
 
     @property
     def conformer_id_3d(self):
@@ -1126,6 +1162,7 @@ class Substance(object):
         :param properties: (optional) A list of the desired properties.
         """
         import pandas as pd
+
         return pd.Series(self.to_dict(properties))
 
     @property
@@ -1286,6 +1323,7 @@ def compounds_to_frame(compounds, properties=None):
     Optionally specify a list of the desired :class:`~pubchempy.Compound` properties.
     """
     import pandas as pd
+
     if isinstance(compounds, Compound):
         compounds = [compounds]
     properties = set(properties) | set(['cid']) if properties else None
@@ -1298,6 +1336,7 @@ def substances_to_frame(substances, properties=None):
     Optionally specify a list of the desired :class:`~pubchempy.Substance` properties.
     """
     import pandas as pd
+
     if isinstance(substances, Substance):
         substances = [substances]
     properties = set(properties) | set(['sid']) if properties else None
@@ -1313,21 +1352,25 @@ def substances_to_frame(substances, properties=None):
 
 class PubChemPyDeprecationWarning(Warning):
     """Warning category for deprecated features."""
+
     pass
 
 
 class PubChemPyError(Exception):
     """Base class for all PubChemPy exceptions."""
+
     pass
 
 
 class ResponseParseError(PubChemPyError):
     """PubChem response is uninterpretable."""
+
     pass
 
 
 class PubChemHTTPError(PubChemPyError):
     """Generic error class to handle all HTTP error codes."""
+
     def __init__(self, e):
         self.code = e.code
         self.msg = e.reason
@@ -1354,18 +1397,21 @@ class PubChemHTTPError(PubChemPyError):
 
 class BadRequestError(PubChemHTTPError):
     """Request is improperly formed (syntax error in the URL, POST body, etc.)."""
+
     def __init__(self, msg='Request is improperly formed'):
         self.msg = msg
 
 
 class NotFoundError(PubChemHTTPError):
     """The input record was not found (e.g. invalid CID)."""
+
     def __init__(self, msg='The input record was not found'):
         self.msg = msg
 
 
 class MethodNotAllowedError(PubChemHTTPError):
     """Request not allowed (such as invalid MIME type in the HTTP Accept header)."""
+
     def __init__(self, msg='Request not allowed'):
         self.msg = msg
 
@@ -1375,18 +1421,21 @@ class TimeoutError(PubChemHTTPError):
 
     See :ref:`Avoiding TimeoutError <avoiding_timeouterror>` for more information.
     """
+
     def __init__(self, msg='The request timed out'):
         self.msg = msg
 
 
 class UnimplementedError(PubChemHTTPError):
     """The requested operation has not (yet) been implemented by the server."""
+
     def __init__(self, msg='The requested operation has not been implemented'):
         self.msg = msg
 
 
 class ServerError(PubChemHTTPError):
     """Some problem on the server side (such as a database server down, etc.)."""
+
     def __init__(self, msg='Some problem on the server side'):
         self.msg = msg
 
