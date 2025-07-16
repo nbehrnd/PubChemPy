@@ -49,3 +49,5 @@ remove_all_but_the_badges:
 
 	-rm -r reports
 	-rm flake8stats.txt
+
+	-pyclean .
