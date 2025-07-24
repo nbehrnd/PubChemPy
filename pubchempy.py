@@ -364,9 +364,9 @@ def get_assays(identifier, namespace='aid', **kwargs):
 PROPERTY_MAP = {
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
-    'canonical_smiles': 'CanonicalSMILES',
+    'canonical_smiles': 'CanonicalSMILES',  # deprecated since July 2025
     'connectivity_smiles': 'ConnectivitySMILES',
-    'isomeric_smiles': 'IsomericSMILES',
+    'isomeric_smiles': 'IsomericSMILES',  # deprecated since July 2025
     'absolute_smiles': 'AbsoluteSMILES',
     'inchi': 'InChI',
     'inchikey': 'InChIKey',
@@ -878,14 +878,17 @@ class Compound(object):
     @property
     def canonical_smiles(self):
         """Canonical SMILES, with no stereochemistry information.
-            This was replaced with the Connectivity SMILES
+
+        By July 2025, PubChem replaced this term by Connectivity SMILES.
         """
         return self.connectivity_smiles
 
     @property
     def isomeric_smiles(self):
         """Isomeric SMILES.
-            This was replaced with the Absolute SMILES"""
+
+        By July 2025, PubChem replaced this term by Absolute SMILES.
+        """
         return self.absolute_smiles
 
     @property
