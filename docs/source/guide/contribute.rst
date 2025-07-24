@@ -21,6 +21,7 @@ Contributors
 - |ghi| `nbehrnd <https://github.com/nbehrnd>`_ (Norwid Behrnd)
 - |ghi| `molpro <https://github.com/molpro>`_ (Peter Knowles)
 - |ghi| `mehr-licht <https://github.com/mehr-licht>`_ (Luis Oliveira)
+- |ghi| `artificial-aidan <https://github.com/artificial-aidan>_ (Aidan Jensen)
 
 .. _`source code`: https://github.com/mcs07/PubChemPy
 .. _`Issue Tracker`: https://github.com/mcs07/PubChemPy/issues
