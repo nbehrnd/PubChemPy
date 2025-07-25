@@ -7,13 +7,19 @@ name = "PubChemPy"
 version = "1.0.4"
 description = "A simple Python wrapper around the PubChem PUG REST API."
 readme = "README.rst"
-requires-python = ">=3.6"
+requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [
     { name = "Matt Swain", email = "m.swain@me.com" }
 ]
 keywords = ["pubchem", "python", "rest", "api", "chemistry", "cheminformatics"]
+# https://pypi.org/classifiers/
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Information Technology",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Healthcare Industry",
     "Intended Audience :: Developers",
@@ -25,6 +31,8 @@ classifiers = [
     "Topic :: Internet",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent",
 ]
 dependencies = [
