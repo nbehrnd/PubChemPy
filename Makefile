@@ -14,11 +14,6 @@ analysis_setup:
 # For now, the partial overlap with `requirements/dev.txt` is intentional.
 	pip install -r requirements/analysis.txt
 
-pytest_analysis:
-	pytest --cache-clear --junitxml=junit.xml -v
-pytest_badge:
-	genbadge tests -i junit.xml -lv
-
 coverage_analysis:
 	coverage run -m pytest -v
 coverage_badge:
@@ -38,6 +33,11 @@ flake8_analysis:
 	@echo "For a more detailed report, see file reports/index.html."
 flake8_badge:
 	genbadge flake8 -i flake8stats.txt -lv
+
+pytest_analysis:
+	pytest --cache-clear --junitxml=junit.xml -v
+pytest_badge:
+	genbadge tests -i junit.xml -lv
 
 remove_all_but_the_badges:
 	-rm -r __pycache__
