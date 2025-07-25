@@ -3,7 +3,7 @@ name: CI_pytest_pubchempy
 # name    : pytest.yml
 # purpose : regularly run pytest on pubchempy
 # date    : [2025-03-31 Mon]
-# edit    : [2025-04-29 Tue]
+# edit    : [2025-07-25 Fri]
 
 on:
   push:
@@ -20,11 +20,12 @@ on:
 jobs:
   test:
     strategy:
+      max-parallel: 1  # reduce outgoing traffic frequency
       matrix:
         # for a factorial test, an explicit selection of GitHUb runner images
         # https://github.com/actions/runner-images?tab=readme-ov-file#available-images
         # state of commit 0e37973 as visited on 2025-04-29 Tue
-        os: [ubuntu-24.04, macos-15, windows-2025]
+        os: [windows-latest, ubuntu-latest, macos-latest]
         python-version: ["3.13"]
     runs-on: ${{ matrix.os }}
 
@@ -45,4 +46,4 @@ jobs:
       - name: run the check by pytest
         run: |
           echo "check by pytest"
-          python -m pytest
+          python -m pytest -v

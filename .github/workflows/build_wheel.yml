@@ -3,7 +3,7 @@ name: CI_wheel_pubchempy
 # name:    build_wheel.yml
 # purpose: build a pubchempy .whl as an artifact without a secret/GitHub token
 # date:    [2025-07-09 Wed]
-# edit:
+# edit:    [2025-07-25 Fri]
 
 on:
   workflow_dispatch:  # launch only by the manual trigger
@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     timeout-minutes: 5
 
