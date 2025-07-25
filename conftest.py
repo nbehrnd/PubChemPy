@@ -23,4 +23,4 @@ def pause_between_tests():
     of calls set lower, than the tests would normally run, too.
     This fixture addresses this problem."""
     yield
-    time.sleep(0.5)
+    time.sleep(1)
