@@ -1,8 +1,8 @@
 PubChemPy
 =========
 
-.. image:: http://img.shields.io/pypi/v/PubChemPy.svg?style=flat
-    :target: https://pypi.python.org/pypi/PubChemPy
+.. .. image:: http://img.shields.io/pypi/v/PubChemPy.svg?style=flat
+..     :target: https://pypi.python.org/pypi/PubChemPy
 
 .. image:: http://img.shields.io/pypi/l/PubChemPy.svg?style=flat
     :target: https://github.com/mcs07/PubChemPy/blob/master/LICENSE
@@ -43,13 +43,20 @@ properties.
 Installation
 ------------
 
-Install PubChemPy using:
+The `authoritative repository`_ only is the one maintained by Matt Swain,
+responsible for the corresponding entry on `PyPI`_ for an installation by 
 
 ::
 
     pip install pubchempy
 
-Alternatively, try one of the other `installation options`_.
+If you want to use results of this local fork -- not guaranteed to be in sync
+with the one by Matt Swain -- you can pick a Python wheel from this fork's
+release page.  Else, clone the repository and run e.g.
+
+::
+
+    pip pyproject.toml .
 
 Documentation
 -------------
@@ -67,6 +74,8 @@ License
 
 PubChemPy is licensed under the `MIT license`_.
 
+.. _`authoritative repository`: https://github.com/mcs07/PubChemPy/
+.. _`PyPI`: https://pypi.python.org/pypi/PubChemPy
 .. _`installation options`: http://pubchempy.readthedocs.io/en/latest/guide/install.html
 .. _`source code`: https://github.com/mcs07/PubChemPy
 .. _`Issue Tracker`: https://github.com/mcs07/PubChemPy/issues
