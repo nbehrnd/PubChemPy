@@ -3,12 +3,12 @@ name: CI_tox_pubchempy
 # name    : tox.yml
 # purpose : run pytest on pubchempy if deemed necessary
 # date    : [2025-07-25 Fri]
-# edit
+# edit    : [2025-08-07 Thu]
 
 on:
   workflow_dispatch:  # the manual trigger
-  push:
-    branches: [ dev, main ]
+#   push:
+#     branches: [ dev, main ]
 
 jobs:
   test:
