@@ -364,8 +364,10 @@ def get_assays(identifier, namespace='aid', **kwargs):
 PROPERTY_MAP = {
     'molecular_formula': 'MolecularFormula',
     'molecular_weight': 'MolecularWeight',
-    'canonical_smiles': 'CanonicalSMILES',
-    'isomeric_smiles': 'IsomericSMILES',
+    'canonical_smiles': 'CanonicalSMILES',  # deprecated since July 2025
+    'connectivity_smiles': 'ConnectivitySMILES',
+    'isomeric_smiles': 'IsomericSMILES',  # deprecated since July 2025
+    'absolute_smiles': 'AbsoluteSMILES',
     'inchi': 'InChI',
     'inchikey': 'InChIKey',
     'iupac_name': 'IUPACName',
@@ -875,13 +877,29 @@ class Compound(object):
 
     @property
     def canonical_smiles(self):
-        """Canonical SMILES, with no stereochemistry information."""
-        return _parse_prop({'label': 'SMILES', 'name': 'Canonical'}, self.record['props'])
+        """Canonical SMILES, with no stereochemistry information.
+
+        By July 2025, PubChem replaced this term by Connectivity SMILES.
+        """
+        return self.connectivity_smiles
 
     @property
     def isomeric_smiles(self):
-        """Isomeric SMILES."""
-        return _parse_prop({'label': 'SMILES', 'name': 'Isomeric'}, self.record['props'])
+        """Isomeric SMILES.
+
+        By July 2025, PubChem replaced this term by Absolute SMILES.
+        """
+        return self.absolute_smiles
+
+    @property
+    def connectivity_smiles(self):
+        """Connectivity SMILES, with no stereochemistry information."""
+        return _parse_prop({'label': 'SMILES', 'name': 'Connectivity'}, self.record['props'])
+
+    @property
+    def absolute_smiles(self):
+        """Absolute SMILES."""
+        return _parse_prop({'label': 'SMILES', 'name': 'Absolute'}, self.record['props'])
 
     @property
     def inchi(self):

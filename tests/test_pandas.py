@@ -45,12 +45,27 @@ def test_substances_dataframe():
     assert df.columns.values.tolist() == ['source_id', 'source_name', 'standardized_cid', 'synonyms']
 
 
-def test_properties_dataframe():
+def test_properties_dataframe_depreciated():
+    """Collect a dataframe with depreciated keyword `isomeric_smiles`.
+
+    To offer backward compatibility by pubchempy, the collection of a dataframe
+    with the keyword PubChem depreciated in July 2025 is checked.  Complemented
+    by `test_properties_dataframe_contemporary`."""
     df = get_properties(['isomeric_smiles', 'xlogp', 'inchikey'], '1,2,3,4', 'cid', as_dataframe=True)
     assert df.ndim == 2
     assert df.index.names == ['CID']
     assert len(df.index) == 4
-    assert sorted(df.columns.values.tolist()) == ['InChIKey', 'IsomericSMILES', 'XLogP']
+    assert sorted(df.columns.values.tolist()) == ['InChIKey', 'SMILES', 'XLogP']
+
+def test_properties_dataframe_contemporary():
+    """Collect a dataframe by `smiles` only.
+
+    The test is complementary to `test_properties_dataframe_depreciated`."""
+    df = get_properties(['smiles', 'xlogp', 'inchikey'], '1,2,3,4', 'cid', as_dataframe=True)
+    assert df.ndim == 2
+    assert df.index.names == ['CID']
+    assert len(df.index) == 4
+    assert sorted(df.columns.values.tolist()) == ['InChIKey', 'SMILES', 'XLogP']
 
 
 def test_compound_series():

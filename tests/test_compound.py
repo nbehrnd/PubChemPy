@@ -12,16 +12,18 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 import re
-
+import warnings
 import pytest
+from http.client import RemoteDisconnected
+from urllib.error import URLError
 
 from pubchempy import *
 
 
 @pytest.fixture(scope='module')
 def c1():
-    """Compound CID 241."""
-    return Compound.from_cid(241)
+    """Compound CID 5950, (S)-alanine."""
+    return Compound.from_cid(5950)
 
 
 @pytest.fixture(scope='module')
@@ -32,20 +34,20 @@ def c2():
 
 def test_basic(c1):
     """Test Compound is retrieved and has a record and correct CID."""
-    assert c1.cid == 241
-    assert repr(c1) == 'Compound(241)'
+    assert c1.cid == 5950
+    assert repr(c1) == 'Compound(5950)'
     assert c1.record
 
 
 def test_atoms(c1):
-    assert len(c1.atoms) == 12
-    assert set(a.element for a in c1.atoms) == {'C', 'H'}
-    assert set(c1.elements) == {'C', 'H'}
+    assert len(c1.atoms) == 13
+    assert set(a.element for a in c1.atoms) == {'C', 'H', 'N', 'O'}
+    assert set(c1.elements) == {'C', 'H', 'N', 'O'}
 
 
 def test_atoms_deprecated(c1):
     with warnings.catch_warnings(record=True) as w:
-        assert set(a['element'] for a in c1.atoms) == {'C', 'H'}
+        assert set(a['element'] for a in c1.atoms) == {'C', 'H', 'N', 'O'}
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
         assert str(w[0].message) == 'Dictionary style access to Atom attributes is deprecated'
@@ -93,8 +95,13 @@ def test_coordinates_deprecated(c1):
 
 
 def test_identifiers(c1):
-    assert len(c1.canonical_smiles) > 10
-    assert len(c1.isomeric_smiles) > 10
+    assert len(c1.canonical_smiles) > 10  # PubChem depreciated keyword by July 2025
+    assert len(c1.connectivity_smiles) > 10
+    assert len(c1.isomeric_smiles) > 10  # PubChem depreciated keyword by July 2025
+    assert len(c1.absolute_smiles) > 10
+    assert c1.canonical_smiles == c1.connectivity_smiles
+    assert c1.connectivity_smiles == "CC(C(=O)O)N"
+    assert c1.absolute_smiles == "C[C@@H](C(=O)O)N"
     assert c1.inchi.startswith('InChI=')
     assert re.match(r'^[A-Z]{14}-[A-Z]{10}-[A-Z\d]$', c1.inchikey)
     # TODO: c1.molecular_formula
@@ -128,18 +135,48 @@ def test_coordinate_type(c1):
 
 
 def test_compound_equality():
-    assert Compound.from_cid(241) == Compound.from_cid(241)
-    assert get_compounds('Benzene', 'name')[0], get_compounds('c1ccccc1' == 'smiles')[0]
+    try:
+        assert Compound.from_cid(241) == Compound.from_cid(241)
+        assert get_compounds('Benzene', 'name')[0], get_compounds('c1ccccc1' == 'smiles')[0]
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_synonyms(c1):
-    assert len(c1.synonyms) > 5
-    assert len(c1.synonyms) > 5
+    try:
+        assert len(c1.synonyms) > 5
+        assert len(c1.synonyms) > 5
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_related_records(c1):
-    assert len(c1.sids) > 20
-    assert len(c1.aids) > 20
+    try:
+        assert len(c1.sids) > 20
+        assert len(c1.aids) > 20
+    except (
+        PubChemHTTPError,
+        ServerError,
+        TimeoutError,
+        RemoteDisconnected,
+        URLError,
+        ConnectionError,
+    ) as e:
+        pytest.skip(f"Network/server error: {e}")
 
 
 def test_compound_dict(c1):
@@ -157,10 +194,13 @@ def test_charged_compound(c2):
 
 def test_charged_compound_deprecated(c2):
     with warnings.catch_warnings(record=True) as w:
-        assert c2.atoms[0]['charge'] == -1
+        assert c2.atoms[0]["charge"] == -1
         assert len(w) == 1
         assert w[0].category == PubChemPyDeprecationWarning
-        assert str(w[0].message) == 'Dictionary style access to Atom attributes is deprecated'
+        assert (
+            str(w[0].message)
+            == "Dictionary style access to Atom attributes is deprecated"
+        )
 
 
 def test_fingerprint(c1):

@@ -17,33 +17,67 @@ import pytest
 from pubchempy import *
 
 
-def test_properties():
-    """"""
+def test_properties_depreciated():
+    """Check by depreciated SMILES keyword.
+
+    For the provision of backward compatibility, the usage of `IsomericSMILES`
+    as keyword PubChem depreciated in July 2025 is checked."""
     results = get_properties(['IsomericSMILES', 'InChIKey'], 'tris-(1,10-phenanthroline)ruthenium', 'name')
     assert len(results) > 0
     for result in results:
         assert 'CID' in result
-        assert 'IsomericSMILES' in result
+        assert 'SMILES' in result
         assert 'InChIKey' in result
 
 
-def test_underscore_properties():
+def test_properties_contemporary():
+    """Modernized check of `test_properties_depreciated`."""
+    results = get_properties(['SMILES', 'InChIKey'], 'tris-(1,10-phenanthroline)ruthenium', 'name')
+    assert len(results) > 0
+    for result in results:
+        assert 'CID' in result
+        assert 'SMILES' in result
+        assert 'InChIKey' in result
+
+
+def test_underscore_properties_depreciated():
     """Properties can also be specified as underscore-separated words, rather than CamelCase."""
     results = get_properties(['isomeric_smiles', 'molecular_weight'], 'tris-(1,10-phenanthroline)ruthenium', 'name')
     assert len(results) > 0
     for result in results:
         assert 'CID' in result
-        assert 'IsomericSMILES' in result
+        assert 'SMILES' in result
         assert 'MolecularWeight' in result
 
 
-def test_comma_string_properties():
+def test_underscore_properties_contemporary():
+    """Properties can also be specified as underscore-separated words, rather than CamelCase."""
+    results = get_properties(['smiles', 'molecular_weight'], 'tris-(1,10-phenanthroline)ruthenium', 'name')
+    assert len(results) > 0
+    for result in results:
+        assert 'CID' in result
+        assert 'SMILES' in result
+        assert 'MolecularWeight' in result
+
+
+def test_comma_string_properties_depreciated():
     """Properties can also be specified as a comma-separated string, rather than a list."""
     results = get_properties('isomeric_smiles,InChIKey,molecular_weight', 'tris-(1,10-phenanthroline)ruthenium', 'name')
     assert len(results) > 0
     for result in results:
         assert 'CID' in result
-        assert 'IsomericSMILES' in result
+        assert 'SMILES' in result
+        assert 'MolecularWeight' in result
+        assert 'InChIKey' in result
+
+
+def test_comma_string_properties_contemporary():
+    """Properties can also be specified as a comma-separated string, rather than a list."""
+    results = get_properties('smiles,InChIKey,molecular_weight', 'tris-(1,10-phenanthroline)ruthenium', 'name')
+    assert len(results) > 0
+    for result in results:
+        assert 'CID' in result
+        assert 'SMILES' in result
         assert 'MolecularWeight' in result
         assert 'InChIKey' in result
 
